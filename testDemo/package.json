@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "koa": "^2.14.2",
+    "socket.io": "^4.7.1",
+    "three": "^0.151.2",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "vite": "^4.2.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^5.0.10"
+  }
+}
