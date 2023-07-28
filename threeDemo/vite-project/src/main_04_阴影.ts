@@ -5,14 +5,6 @@ import App from './App.vue';
 import gsap from 'gsap';
 import * as dat from 'dat.gui';
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-// 引入渲染器通道RenderPass
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-// 引入OutlinePass通道
-import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
-
-
-
 // 引入gltf模型加载库GLTFLoader.js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { setLights } from './hooks/lightsHook'
@@ -21,28 +13,11 @@ import { setCamera } from './hooks/cameraHook'
 const scene = new THREE.Scene();
 setLights(scene);
 let camera = setCamera(scene);
-let renderer = setCommon(scene, camera);
-
-// 创建一个渲染器通道，场景和相机作为参数
-const renderPass = new RenderPass(scene, camera);
-// OutlinePass第一个参数v2的尺寸和canvas画布保持一致
-const v2 = new THREE.Vector2(window.innerWidth, window.innerWidth);
-// const v2 = new THREE.Vector2(800, 600);
-const outlinePass = new OutlinePass(v2, scene, camera);
-
-
-// 创建后处理对象EffectComposer，WebGL渲染器作为参数
-const composer = new EffectComposer(renderer);
-
-// 设置renderPass通道
-composer.addPass(renderPass);
-composer.addPass(outlinePass);
-
-
+setCommon(scene, camera);
 // 创建GLTF加载器对象
 const loader = new GLTFLoader();
 loader.load('/module/potted_plant_01_4k/potted_plant_01_4k.gltf', function (gltf) {
-  // scene.add(gltf.scene); //三维场景添加到model组对象中
+  scene.add(gltf.scene); //三维场景添加到model组对象中
   const box3 = new THREE.Box3();
   box3.expandByObject(gltf.scene); // 计算模型包围盒
   
@@ -172,50 +147,12 @@ loader.load('/module/potted_plant_01_4k/potted_plant_01_4k.gltf', function (gltf
 
 })
 
-
-const geometry = new THREE.BoxGeometry(1,1,1);
-geometry.translate(0, -0.5, 0);
-const material = new THREE.MeshBasicMaterial({
-  color:'#ff0000'
+const geometry = new THREE.BoxGeometry(5,0.2,5);
+const material = new THREE.MeshLambertMaterial({
+  color:'#ffffff'
 })
-// mesh顶部中心添加标注，顶部中心坐标是(0,100,0)
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh)
-
-const texture = new THREE.TextureLoader().load("/img/default.jpg");
-// 创建精灵材质对象SpriteMaterial
-const spriteMaterial = new THREE.SpriteMaterial({
-  color:0x00ffff,//设置颜色
-  map:texture,
-  // rotation:Math.PI/4,
-});
-// 创建精灵模型对象，不需要几何体geometry参数
-const sprite = new THREE.Sprite(spriteMaterial);
-// 控制精灵大小
-console.log('sprite.scale',sprite.scale);
-sprite.scale.set(0.1, 0.1, 1); //只需要设置x、y两个分量就可以
-sprite.position.set(0, 0.05, 0);
-scene.add(sprite)
-
-// 一个模型对象
-outlinePass.selectedObjects = [mesh];
-// 多个模型对象
-// outlinePass.selectedObjects = [mesh1,mesh2,group];
-function animate() {
-  
-  requestAnimationFrame(animate);
-  
-  // angle += 0.01;
-  // // 相机y坐标不变，在XOZ平面上做圆周运动
-  // camera.position.x = R * Math.cos(angle);
-  // camera.position.z = R * Math.sin(angle);
-
-  // controls.update();
-  composer.render();
-}
-animate();
-
-
-
-
+const mesh = new THREE.Mesh(geometry,material);
+mesh.position.y=-1;
+mesh.receiveShadow =true;
+scene.add(mesh);
 
