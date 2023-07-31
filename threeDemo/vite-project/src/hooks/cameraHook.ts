@@ -1,7 +1,7 @@
 export const setCamera=(scene:any)=>{
   
   const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 2//200 100
+  camera.position.z = 5//200 100 2 5
 
 //   // 正投影相机
 // const width = window.innerWidth; //canvas画布宽度

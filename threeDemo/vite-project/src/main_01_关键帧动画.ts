@@ -30,6 +30,12 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { CSS3DRenderer, CSS3DSprite, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 
+
+
+
+
+
+
 // 引入gltf模型加载库GLTFLoader.js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -91,69 +97,105 @@ dracoLoader.setDecoderPath('/draco/gltf/');
 loader.setDRACOLoader(dracoLoader);
 let meshArrGlobal = <any>[];
 
-// loader.load('/module/gltf/Soldier.glb', function (gltf) {
-//   scene.add(gltf.scene); //三维场景添加到model组对象中
-//   const worldPosition = new THREE.Vector3();
-//   console.log('动画数据', gltf.animations);
-//   gltf.scene.visible=false;
-//   console.log('gltf.scene', gltf.scene);
-//   //包含关键帧动画的模型作为参数创建一个播放器
-//   const mixer = new THREE.AnimationMixer(gltf.scene);
-//   //  获取gltf.animations[0]的第一个clip动画对象
-//   const clipAction = mixer.clipAction(gltf.animations[0]); //创建动画clipAction对象
-//   clipAction.play(); //播放动画
-//   // 骨骼辅助显示
-//   const skeletonHelper = new THREE.SkeletonHelper(gltf.scene);
-//   scene.add(skeletonHelper); 
+loader.load('/module/gltf/LittlestTokyo.glb', function (gltf) {
+  scene.add(gltf.scene); //三维场景添加到model组对象中
+  const worldPosition = new THREE.Vector3();
+  console.log('动画数据', gltf.animations);
+  //包含关键帧动画的模型作为参数创建一个播放器
+  const mixer = new THREE.AnimationMixer(gltf.scene);
+  //  获取gltf.animations[0]的第一个clip动画对象
+  const clipAction = mixer.clipAction(gltf.animations[0]); //创建动画clipAction对象
+  clipAction.play(); //播放动画
 
-//   // 如果想播放动画,需要周期性执行`mixer.update()`更新AnimationMixer时间数据
-//   const clock = new THREE.Clock();
-//   function loop() {
-//     requestAnimationFrame(loop);
-//     //clock.getDelta()方法获得loop()两次执行时间间隔
-//     const frameT = clock.getDelta();
-//     // 更新播放器相关的时间
-//     mixer.update(frameT);
-//   }
-//   loop();
+  // 如果想播放动画,需要周期性执行`mixer.update()`更新AnimationMixer时间数据
+  const clock = new THREE.Clock();
+  function loop() {
+    requestAnimationFrame(loop);
+    //clock.getDelta()方法获得loop()两次执行时间间隔
+    const frameT = clock.getDelta();
+    // 更新播放器相关的时间
+    mixer.update(frameT);
+  }
+  loop();
 
+
+})
+
+
+
+
+
+
+// mmdLoader.load('/module/XueHu3D-20230718/huhu_0718.pmx', function (mmd) {
+//   // debugger
+//   scene.add(mmd); 
 
 // })
 
 
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+geometry.translate(0, -0.5, 0);
+const material = new THREE.MeshBasicMaterial({
+  color: '#00ffff'
+})
+// mesh顶部中心添加标注，顶部中心坐标是(0,100,0)
+const mesh = new THREE.Mesh(geometry, material);
+// scene.add(mesh)
+
+// 给需要设置关键帧动画的模型命名
+mesh.name = "Box";
+const times = [0, 3, 6]; //时间轴上，设置三个时刻0、3、6秒
+// times中三个不同时间点，物体分别对应values中的三个xyz坐标
+const values = [0, 0, 0, 1, 0, 0, 0, 0, 1];
+// 0~3秒，物体从(0,0,0)逐渐移动到(100,0,0),3~6秒逐渐从(100,0,0)移动到(0,0,100)
+const posKF = new THREE.KeyframeTrack('Box.position', times, values);
+// 从2秒到5秒，物体从红色逐渐变化为蓝色
+const colorKF = new THREE.KeyframeTrack('Box.material.color', [2, 5], [1, 0, 0, 0, 0, 1]);
+// 1.3 基于关键帧数据，创建一个clip关键帧动画对象，命名"test"，持续时间6秒。
+const clip = new THREE.AnimationClip("test", 9, [posKF, colorKF]);
+//包含关键帧动画的模型对象作为AnimationMixer的参数创建一个播放器mixer
+const mixer = new THREE.AnimationMixer(mesh);
+//AnimationMixer的`.clipAction()`返回一个AnimationAction对象
+const clipAction = mixer.clipAction(clip);
+//.play()控制动画播放，默认循环播放
+clipAction.play();
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const texture = new THREE.TextureLoader().load("/img/default.jpg");
+// 创建精灵材质对象SpriteMaterial
+const spriteMaterial = new THREE.SpriteMaterial({
+  color: 0x00ffff,//设置颜色
+  map: texture,
+  // rotation:Math.PI/4,
+});
+// 创建精灵模型对象，不需要几何体geometry参数
+const sprite = new THREE.Sprite(spriteMaterial);
+// 控制精灵大小
+console.log('sprite.scale', sprite.scale);
+sprite.scale.set(0.1, 0.1, 1); //只需要设置x、y两个分量就可以
+sprite.position.set(0, 0.05, 0);
+// scene.add(sprite)
 
 // 一个模型对象
 outlinePass.selectedObjects = [];
 // 多个模型对象
 // outlinePass.selectedObjects = [mesh1,mesh2,group];
-// const clock = new THREE.Clock();
+const clock = new THREE.Clock();
 function animate() {
 
   requestAnimationFrame(animate);
 
-  
+  // angle += 0.01;
+  // // 相机y坐标不变，在XOZ平面上做圆周运动
+  // camera.position.x = R * Math.cos(angle);
+  // camera.position.z = R * Math.sin(angle);
+
+  // controls.update();
+  const frameT = clock.getDelta();
+  // 更新播放器相关的时间
+  // mixer.update(frameT);
   composer.render();
 
 }

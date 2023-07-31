@@ -38,12 +38,12 @@ export const setCommon = (scene: any,camera:any) => {
 
   window.addEventListener('dblclick', () => {
     // debugger
-    const fullscreenElement = document.fullscreenElement;
-    if (!fullscreenElement) {
-      renderer.domElement.requestFullscreen()
-    } else {
-      document.exitFullscreen();
-    }
+    // const fullscreenElement = document.fullscreenElement;
+    // if (!fullscreenElement) {
+    //   renderer.domElement.requestFullscreen()
+    // } else {
+    //   document.exitFullscreen();
+    // }
   })
 
   // 渲染循环
@@ -59,7 +59,8 @@ const R = 2; //相机圆周运动的半径
     // camera.position.z = R * Math.sin(angle);
 
     // controls.update();
-    renderer.render(scene, camera);
+    
+    // renderer.render(scene, camera);
   }
   // animate();
   renderer.setClearColor(0x444444, 1); //设置背景颜色

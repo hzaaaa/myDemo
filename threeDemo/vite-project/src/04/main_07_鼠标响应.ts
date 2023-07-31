@@ -24,14 +24,6 @@ import {ShaderPass} from 'three/addons/postprocessing/ShaderPass.js';
 // SMAA抗锯齿通道
 import {SMAAPass} from 'three/addons/postprocessing/SMAAPass.js';
 
-// 引入CSS2渲染器CSS2DRenderer和CSS2模型对象CSS2DObject
-import { CSS2DRenderer,CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-// 引入CSS3渲染器CSS3DRenderer
-import {CSS3DRenderer,CSS3DObject} from 'three/addons/renderers/CSS3DRenderer.js';
-
-
-
-
 
 
 
@@ -42,10 +34,6 @@ import { MMDLoader } from 'three/addons/loaders/MMDLoader.js';
 import { setLights } from './hooks/lightsHook'
 import { setCommon } from './hooks/commonHook'
 import { setCamera } from './hooks/cameraHook'
-
-const width =window.innerWidth;
-const height =window.innerHeight;
-
 const scene = new THREE.Scene();
 setLights(scene);
 let camera = setCamera(scene);
@@ -89,43 +77,6 @@ composer.addPass(smaaPass);
 
 
 
-
-
-// 创建一个html标签
-function tag(){
-    const div = document.createElement('div');
-    // div.style.visibility = 'hidden';
-    div.innerHTML = '标签内容';
-    div.style.padding = '4px 10px';
-    div.style.color = '#fff';
-    div.style.fontSize = '16px';
-    div.style.position = 'absolute';
-    div.style.backgroundColor = 'rgba(25,25,25,0.5)';
-    div.style.borderRadius = '5px';
-    div.style.backfaceVisibility='hidden'
-    // div元素包装成为css2模型对象CSS2DObject
-    const label =new CSS3DObject(div);
-    div.style.pointerEvents = 'none';//避免HTML标签遮挡三维场景的鼠标事件
-     // 设置HTML元素标签在three.js世界坐标中位置
-    // label.position.set(0,1,0);
-    label.scale.set(0.01,0.01,1);
-    return label;
-}
-
-const labelRenderer = new CSS3DRenderer();
-labelRenderer.setSize(window.innerWidth, window.innerHeight);
-labelRenderer.domElement.style.position = 'absolute';
-// 相对鼠标的相对偏移
-// labelRenderer.domElement.style.top = '-16px';
-// labelRenderer.domElement.style.left = '0px';
-// //设置.pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
-labelRenderer.domElement.style.pointerEvents = 'none';
-document.body.appendChild(labelRenderer.domElement);
-
-let label = tag();
-
-
-
 // 创建GLTF加载器对象
 const loader = new GLTFLoader();
 const mmdLoader = new MMDLoader();
@@ -137,7 +88,8 @@ renderer.domElement.addEventListener('click', function (event) {
   // .offsetY、.offsetX以canvas画布左上角为坐标原点,单位px
   const px = event.offsetX;
   const py = event.offsetY;
-
+  const width =window.innerWidth;
+  const height =window.innerHeight;
   //屏幕坐标px、py转WebGL标准设备坐标x、y
   //width、height表示canvas画布宽高度
   const x = (px / width) * 2 - 1;
@@ -205,8 +157,6 @@ renderer.domElement.addEventListener('click', function (event) {
 
 loader.load('/module/potted_plant_01_4k/potted_plant_01_4k.gltf', function (gltf) {
   scene.add(gltf.scene); //三维场景添加到model组对象中
-  const worldPosition = new THREE.Vector3();
-  gltf.scene.children[0].add(label)
   const box3 = new THREE.Box3();
   box3.expandByObject(gltf.scene); // 计算模型包围盒
   
@@ -382,7 +332,6 @@ function animate() {
 
   // controls.update();
   composer.render();
-  labelRenderer.render(scene, camera); //渲染标签
 }
 animate();
 

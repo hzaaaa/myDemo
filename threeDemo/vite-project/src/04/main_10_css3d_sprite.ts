@@ -27,7 +27,7 @@ import {SMAAPass} from 'three/addons/postprocessing/SMAAPass.js';
 // 引入CSS2渲染器CSS2DRenderer和CSS2模型对象CSS2DObject
 import { CSS2DRenderer,CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 // 引入CSS3渲染器CSS3DRenderer
-import {CSS3DRenderer,CSS3DObject} from 'three/addons/renderers/CSS3DRenderer.js';
+import {CSS3DRenderer,CSS3DSprite,CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 
 
@@ -104,7 +104,9 @@ function tag(){
     div.style.borderRadius = '5px';
     div.style.backfaceVisibility='hidden'
     // div元素包装成为css2模型对象CSS2DObject
-    const label =new CSS3DObject(div);
+    const label =new CSS3DSprite (div);
+    //修改.style.pointerEvents，要在实例化new CSS3DObject(div)之后，
+    //因为执行new CSS3DObject(div)的时候，会把HTML标签设置为.style.pointerEvents = 'auto'
     div.style.pointerEvents = 'none';//避免HTML标签遮挡三维场景的鼠标事件
      // 设置HTML元素标签在three.js世界坐标中位置
     // label.position.set(0,1,0);

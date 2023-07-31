@@ -26,9 +26,6 @@ import {SMAAPass} from 'three/addons/postprocessing/SMAAPass.js';
 
 // 引入CSS2渲染器CSS2DRenderer和CSS2模型对象CSS2DObject
 import { CSS2DRenderer,CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-// 引入CSS3渲染器CSS3DRenderer
-import {CSS3DRenderer,CSS3DObject} from 'three/addons/renderers/CSS3DRenderer.js';
-
 
 
 
@@ -89,7 +86,7 @@ composer.addPass(smaaPass);
 
 
 
-
+// import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 // 创建一个html标签
 function tag(){
@@ -102,17 +99,15 @@ function tag(){
     div.style.position = 'absolute';
     div.style.backgroundColor = 'rgba(25,25,25,0.5)';
     div.style.borderRadius = '5px';
-    div.style.backfaceVisibility='hidden'
     // div元素包装成为css2模型对象CSS2DObject
-    const label =new CSS3DObject(div);
+    const label =new CSS2DObject(div);
     div.style.pointerEvents = 'none';//避免HTML标签遮挡三维场景的鼠标事件
      // 设置HTML元素标签在three.js世界坐标中位置
     // label.position.set(0,1,0);
-    label.scale.set(0.01,0.01,1);
     return label;
 }
 
-const labelRenderer = new CSS3DRenderer();
+const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.style.position = 'absolute';
 // 相对鼠标的相对偏移

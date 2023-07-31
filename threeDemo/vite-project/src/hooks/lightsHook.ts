@@ -76,7 +76,7 @@ export const setLights = (sceneTemp: any) => {
   scene = sceneTemp;
 
   // setPointLight();
-  // setAmbient();
+  setAmbient();
   setDirectionalLight();
   // setSpotLight();
 
