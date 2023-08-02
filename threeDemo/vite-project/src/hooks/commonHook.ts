@@ -18,9 +18,9 @@ export const setCommon = (scene: any,camera:any) => {
   
 
 
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.update();
+  // const controls = new OrbitControls(camera, renderer.domElement);
+  // controls.enableDamping = true;
+  
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
@@ -62,7 +62,7 @@ const R = 2; //相机圆周运动的半径
     
     // renderer.render(scene, camera);
   }
-  // animate();
+  animate();
   renderer.setClearColor(0x444444, 1); //设置背景颜色
   renderer.shadowMap.enabled=true;
   return renderer;

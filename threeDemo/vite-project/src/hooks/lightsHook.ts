@@ -21,7 +21,7 @@ let setDirectionalLight = () => {
   // 平行光
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   // 设置光源的方向：通过光源position属性和目标指向对象的position属性计算
-  directionalLight.position.set(0, 2, -1);
+  directionalLight.position.set(0, 2, 5);
   directionalLight.castShadow = true;//阴影要排除其他光源干扰
   directionalLight.shadow.radius = 3;
 
@@ -41,14 +41,14 @@ let setDirectionalLight = () => {
 
   // 可视化平行光阴影对应的正投影相机对象
   const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-  scene.add(cameraHelper);
+  // scene.add(cameraHelper);
 
   // 方向光指向对象网格模型mesh，可以不设置，默认的位置是0,0,0
   // directionalLight.target = mesh;
   scene.add(directionalLight);
   // DirectionalLightHelper：可视化平行光
   const dirLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5, 0xff0000);
-  scene.add(dirLightHelper);
+  // scene.add(dirLightHelper);
 }
 let setSpotLight = () => {
   // 聚光源
@@ -70,7 +70,7 @@ let setSpotLight = () => {
 
   // 聚广源辅助对象，可视化聚广源
   const spotLightHelper = new THREE.SpotLightHelper(spotLight, 0xffffff)
-  scene.add(spotLightHelper);
+  // scene.add(spotLightHelper);
 }
 export const setLights = (sceneTemp: any) => {
   scene = sceneTemp;
