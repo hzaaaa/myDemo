@@ -1,0 +1,78 @@
+/*
+---------- 此处的样式会覆盖 ElementPlus 默认样式 ----------
+*/
+#app {
+  .el-menu {
+    border-right: none;
+  }
+}
+
+:root {
+  --el-color-primary: #00cdc4;
+  
+  // --el-color-success: #FFA42E;
+}
+
+.el-input-number .el-input__inner {
+  text-align: left !important;
+}
+.el-radio.el-radio--large{
+  height: 32px;
+}
+.el-dialog{
+  --el-dialog-title-font-size:24px;
+  margin: auto !important;
+  
+  padding-top: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
+
+  border-radius: 10px;
+}
+.el-overlay-dialog{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.el-dialog__header{
+  padding-bottom: 26px;
+}
+.el-dialog__body{
+  padding-top: 0;
+}
+.form_title_dialog{
+  font-size: 16px;
+  font-family: PingFang SC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #303133;
+  line-height: 22px;
+  margin-bottom: 16px;
+
+  width:82px;
+  text-align: right;
+}
+
+
+
+.el-table th.el-table__cell{//表格头背景色
+  background:#F5F7FA  !important;
+
+}
+.el-table thead{//表格头字体色
+  color:#606266  !important;
+
+}
+.el-card{
+  border-radius: 10px;
+  height: calc(100vh - 150px);
+}
+.el-card__body{
+  padding: 22px 30px;
+}
+.el-table--border .el-table__cell{
+  border-right: none;
+}
+
+.el-button--primary.is-plain{
+  --el-button-bg-color: white !important;
+}

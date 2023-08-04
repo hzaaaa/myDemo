@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // 目标语言的版本
+    "useDefineForClassFields": true, // class 声明中字段从 set 转为 define. ESNext 默认值
+    "module": "ESNext", // 生成代码的模块标准. 还有 CommonJS 等
+    "moduleResolution": "Node", // 模块解析策略，ts默认用node的解析策略，即相对的方式导入
+    "strict": true, // 开启所有严格的类型检查
+    "jsx": "preserve", // 对于 jsx 文件采取保留措施，不处理
+    "resolveJsonModule": true, // 支持 json 文件的 import 导入
+    "isolatedModules": true, // ts 文件必须带 import 或 export 才会被当作模块
+    "esModuleInterop": true, // 对于基于 CommonJS 的库，允许按照 ES Module 导入
+    "lib": ["ESNext", "DOM"], // ts 需要引用的库，即声明文件，如需要使用 es 的高级版本特性，通常都需要配置
+    "skipLibCheck": true, // 跳过第三方库检查，解决 vue 等库与 isolatedModules 的冲突
+    "baseUrl": "./", // 解析非相对模块的基地址，默认是 tsconfig.json 所在目录
+    "paths": {
+      // 路径映射，相对于baseUrl
+      "@": ["src"],
+      "@/*": ["src/*"]
+    },
+    "types": ["vite/client"] // 在 import.meta 上注入 .env 等类型定义
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "vite.config.ts", "public/worker.js"],
+  "exclude": ["node_modules", "dist", "**/*.js"]
+}

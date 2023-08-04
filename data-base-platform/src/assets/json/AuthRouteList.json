@@ -1,0 +1,66 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "path": "/dataManagement",
+      "name": "Customer",
+      "redirect": "/dataManagement/companyAccount/index",
+      "meta": {
+        "icon": "icon-kehuguanli",
+        "title": "数据管理",
+        "isKeepAlive": false
+      },
+      "children": [
+        {
+          "path": "/dataManagement/dataQuery/index",
+          "name": "dataQuery",
+          "component": "/dataManagement/dataQuery/index",
+          "meta": {
+            "title": "数据查询",
+            "isKeepAlive": true,
+            "isHide": false
+          },
+          "children": [
+            
+          ]
+        }
+        
+      ]
+    },
+    {
+      "path": "/sysManagement",
+      "name": "Sys",
+      "redirect": "/sysManagement/backgroundAccountManagement/index",
+      "meta": {
+        "icon": "icon-xitong",
+        "title": "系统管理",
+        "isKeepAlive": false
+      },
+      "children": [
+        {
+          "path": "/sysManagement/backgroundAccountManagement/index",
+          "name": "Account",
+          "component": "/sysManagement/backgroundAccountManagement/index",
+          "meta": {
+            "title": "后台账号管理",
+            "isKeepAlive": true,
+            "isHide": false
+          }
+        },
+        
+        {
+          "path": "/sysManagement/rolePermissionManagement/index",
+          "name": "RolePermission",
+          "component": "/sysManagement/rolePermissionManagement/index",
+          "meta": {
+            "title": "角色权限",
+            "isKeepAlive": true,
+            "isHide": false
+          }
+        }
+      ]
+    }
+    
+  ],
+  "msg": "成功"
+}

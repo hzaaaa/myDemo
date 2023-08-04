@@ -1,0 +1,13 @@
+{
+  "code": 200,
+  "data": {
+    "token":"token",
+    "userInfoVo":{
+      "sysUser":{
+        "username":"username"
+      }
+    },
+    "id":1
+  },
+  "msg": "成功"
+}
