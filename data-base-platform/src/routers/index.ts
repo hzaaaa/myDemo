@@ -35,6 +35,7 @@ router.beforeEach(async (to, from, next) => {
   if (!userStore.token) return next({ path: "/login", replace: true });
   
   // 3. 如果没有菜单列表，重新请求菜单列表并添加动态路由（手动刷新、输入地址跳转时）
+  
   if (!authStore.authRouteListGet.length) {
     
     await initDynamicRoutes();

@@ -15,7 +15,7 @@ export const getMenuTreeApi = (params?: any) => {
   return new Promise((resolve,reject)=>{
     let dataBaseStore =useDataBase();
     getResourceCatalogApi().then((res:any)=>{
-      // debugger
+      
       console.log('getResourceCatalogApi',res)
       let list = res.data||[];
       let arr =<any>[];

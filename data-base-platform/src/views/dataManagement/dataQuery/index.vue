@@ -3,22 +3,25 @@
 		<div class="wrap">
 
 			<div class="table-list">
-				<div @dblclick="" @click="currentSelectTable = item_table" v-for="item_table in tableList">
+				<div   v-for="item_table in tableList">
 
-					<div class="table-single" :class="currentSelectTable === item_table ? 'active' : ''">{{ item_table.name }}</div>
-					<div class="table-single pl25" @click="currentSelectVar = item_var"
+					<div class="table-single" @dblclick="tableClick(item_table)" :class="currentSelectTable === item_table ? 'active' : ''">{{ item_table.name }}</div>
+					<div class="table-single pl25" @dblclick="varClick(item_var)"
 						:class="currentSelectVar === item_var ? 'active' : ''" v-show="currentSelectTable === item_table"
 						v-for="item_var in currentSelectTable.column">{{ item_var.name }}</div>
 				</div>
 			</div>
-			<div class="sql-block">
+			<div class="sql-block" v-loading="sqlLoading">
 				<div class="sql-input">
 
-					<textarea ref="textareaRef" v-model="stringInput" />
+					<textarea  ref="textareaRef" v-model="stringInput" />
 					<el-button class="query" @click="queryClick" size="default" type="primary">
 
-						查询
+						执行
 					</el-button>
+				</div>
+				<div class="err_result" style="color:red" >
+					{{ sqlErr }}
 				</div>
 				<div class="result-wrap">
 					<div class="result-head">
@@ -41,22 +44,39 @@
 					</div>
 				</div>
 			</div>
-			<div class="right-block">
+			<div class="right-block" style="user-select: none;">
 				<div class="comment-block">
 					<div class="title-head">
-						{{ '注释' }}
+						{{ commentName }}（{{ commentType }}）
 					</div>
 					<div class="comment-body">
+						<el-form class="mt20 mr10" label-width="80px">
+							<el-form-item label="原注释：">
+								{{ oldComent }}
+							</el-form-item>
+							<el-form-item label="新注释：">
+								<el-input v-model="newComment" />
+							</el-form-item>
+						</el-form>
+						<el-button class="query"  @click="editCommentClick" size="default" type="primary">
 
+							修改
+						</el-button>
 					</div>
 
 				</div>
 				<div class="history-block">
 					<div class="title-head">
-						历史记录
+						查询历史记录
 					</div>
 					<div class="history-list">
 
+						<div @dblclick="historyDblclick(item_table)" v-for="item_table in historyList">
+
+							<div class="table-single" :class="currentHistorrySelectTable === item_table ? 'active' : ''">{{
+								item_table.sql }}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -96,24 +116,40 @@ import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/addon/hint/sql-hint';
 import 'codemirror/addon/hint/show-hint';
 
-import { executeApi, queryHistoryApi } from "@/api/biz/sql"
+import { executeApi, queryHistoryApi ,updateDatabaseCommentApi,updateTableCommentApi,updateColumnCommentApi} from "@/api/biz/sql"
+import { getResourceCatalogApi} from "@/api/system/menu"
 import { useDataBase } from '@/stores/dataBase'
+import { useHistoryHook } from './historyHook'
+import { useCommentHook } from './commentHook'
+import { useTableListHook } from './tableListHook';
 
-let dataBaseStore = useDataBase();
 let route = useRoute();
+let router = useRouter();
 console.log('route', route)
+let dataBaseStore = useDataBase();
+let dataBase = dataBaseStore.getTablesByBaseName(route.name)
+console.log('dataBase', dataBase)
+let hintobj =<any>{}
+dataBase.table.forEach((item:any)=>{
+	let varList =<any>[];
+	item.column.forEach((varItem:any)=>{
+		varList.push(varItem.name);
+	})
+	hintobj[item.name]=varList
+})
 let stringInput = ref("");
+
 let textareaRef = ref(null);
 let editor = <any>null;
-const hintobj = (val: any) => {
-	// 动态设置tables参数
-	editor.setOption('hintOptions', {
-		completeSingle: false,
-		// 自定义提示选项
-		tables: { 'user': ['name', 'sex', 'id'], 'student': ['b_id', 'name'] }
-	})
-	// return { 'user': ['name', 'sex', 'id'], 'student': ['b_id', 'name'] 
-}
+// const hintobj = (val: any) => {
+// 	// 动态设置tables参数
+// 	editor.setOption('hintOptions', {
+// 		completeSingle: false,
+// 		// 自定义提示选项
+// 		tables: { 'user': ['name', 'sex', 'id'], 'student': ['b_id', 'name'] }
+// 	})
+// 	// return { 'user': ['name', 'sex', 'id'], 'student': ['b_id', 'name'] 
+// }
 onMounted(() => {
 	// 对应按键下调用的自动提示方法
 	function completeAfter(cm: any, pred: any) {
@@ -168,8 +204,7 @@ onMounted(() => {
 		},
 		hintOptions: {
 			completeSingle: false,
-			tables: { 'user': ['name', 'sex', 'id'], 'student': ['b_id', 'name'] }
-			// tables: hintobj  // sql类型下自定义提示选项使用tables
+			tables: hintobj  // sql类型下自定义提示选项使用tables
 			// tables结构示例： {'user': ['name', 'sex', 'id'], 'student': ['b_id', 'name']}
 		},
 		lineWrapping: true // 是否应滚动或换行以显示长行
@@ -177,42 +212,23 @@ onMounted(() => {
 
 
 })
-// getDatabaseApi({}).then((res:any)=>{
-// 	console.log('res',res)
-// })
-
-const tableList = <any>ref([]);
-const currentSelectTable = <any>ref({
-	column: []
-});
-const currentSelectVar = <any>ref({
-	// column:[]
-});
 
 
-let dataBase = dataBaseStore.getTablesByBaseName(route.name)
-console.log('dataBase', dataBase)
-tableList.value = dataBase.table;
 
 
 const columns = <any>ref([]);
 const result_data = <any>ref([]);
 
-
+const sqlLoading = ref(false);
+const sqlErr = ref('');
 const queryClick = () => {
-	// debugger
-	// let save = editor.save();
-	// let value = editor.getValue();
-	// console.log(' save', save)
-	// console.log(' value', value)
-	// console.log(' stringInput.value', stringInput.value)
-	// console.log(' editor', editor)
-
-	// console.log(' editor', editor.getTextArea())
+	let selected_str =window.getSelection()?.toString(); 
+	console.log('selected_str',selected_str)
 	// return
-	executeApi({ sql: editor.getValue(), database: route.name }).then((res: any) => {
-		// executeApi({ sql: 'select * from  t1;', database: route.name }).then((res: any) => {
-		// debugger
+	sqlLoading.value=true;
+	executeApi({ sql: selected_str||editor.getValue(), database: route.name }).then((res: any) => {
+	// executeApi({ sql: editor.getValue(), database: route.name }).then((res: any) => {
+		
 		console.log('executeApi', res)
 		let data = res.data;
 		let obj = data[0] || {};
@@ -233,14 +249,70 @@ const queryClick = () => {
 			item.parentId = null;
 		})
 		result_data.value = data || [];
+		sqlErr.value=''
+		queryHistory();
 
+	}).catch((err:any)=>{
+		result_data.value=[];
+		columns.value = [];
+		sqlErr.value=err.msg;
+	}).finally(()=>{
+
+		sqlLoading.value=false;
 	})
+	
 }
 
+let {
+	currentSelectTable,
+	tableList,
+	currentSelectVar,
+	
+} = useTableListHook(dataBase);
+const tableClick=(item_table:any)=>{
+  currentSelectTable.value =item_table;
+	editor.setValue(`select * from ${item_table.name}`);
+	commentName.value=item_table.name;
+	commentType.value='表';
+	oldComent.value=item_table.comment;
+	newComment.value='';
+	console.log('item_table',item_table)
+	//api 修改
+	editCommentapi.value=updateTableCommentApi;
+	commentId.value= item_table.id;
+}
+const varClick=(item_var:any)=>{
+	
+  currentSelectVar.value =item_var
+	editor.setValue(`select ${item_var.name} from ${currentSelectTable.value.name}`);
+	commentName.value=item_var.name;
+	commentType.value='字段';
+	oldComent.value=item_var.comment;
+	newComment.value='';
+	console.log('item_var',item_var)
+	//api 修改
+	editCommentapi.value= updateColumnCommentApi;
+	commentId.value= item_var.id;
+}
+let {
+	commentName,
+	commentType,
+	oldComent,
+	newComment,
+	editCommentClick,
+	editCommentapi,
+	commentId,
+} = useCommentHook(dataBase,updateDatabaseCommentApi,router)
 
-queryHistoryApi({}).then((res: any) => {
-	console.log('queryHistoryApi', res);
-})
+let {
+	historyList,
+	currentHistorrySelectTable,
+	queryHistory,
+} = useHistoryHook(editor, queryHistoryApi);
+const historyDblclick = (item_table: any) => {
+	currentHistorrySelectTable.value = item_table;
+	editor.setValue(item_table.sql)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -268,28 +340,31 @@ queryHistoryApi({}).then((res: any) => {
 	height: 100%;
 	overflow: auto;
 	border: 1px solid #e3e3e3;
-
-	.table-single {
-		height: 40px;
-		line-height: 40px;
-		color: #303133;
-		cursor: pointer;
-		padding-left: 10px;
-	}
-
-	.table-single.active {
-		background-color: #eefffe;
-		color: var(--el-menu-active-color);
-	}
-
-	.table-single:hover {
-		background-color: var(--el-menu-hover-bg-color);
-	}
+	user-select:none
 
 }
 
+.table-single {
+	height: 40px;
+	line-height: 40px;
+	color: #303133;
+	cursor: pointer;
+	padding-left: 10px;
+}
+
+.table-single.active {
+	background-color: #eefffe;
+	color: var(--el-menu-active-color);
+}
+
+.table-single:hover {
+	background-color: var(--el-menu-hover-bg-color);
+}
+
+
 .sql-block {
 	flex: 1;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 
@@ -307,6 +382,8 @@ queryHistoryApi({}).then((res: any) => {
 	.result-wrap {
 		// background: red;
 		flex: 1;
+		overflow: auto;
+		height: 0;
 		border: 1px solid #e3e3e3;
 		display: flex;
 		flex-direction: column;
@@ -344,15 +421,31 @@ queryHistoryApi({}).then((res: any) => {
 	.comment-block {
 		border: 1px solid #e3e3e3;
 		height: 302px;
+		position: relative;
+
+		.comment-body {
+
+			.query {
+				position: absolute;
+				right: 15px;
+				bottom: 10px;
+			}
+		}
+
 	}
 
 	.history-block {
 		flex: 1;
+		height: 0;
 		border: 1px solid #e3e3e3;
 		display: flex;
 		flex-direction: column;
 
-		.history-list {}
+		.history-list {
+			flex: 1;
+			height: 0;
+			overflow: auto;
+		}
 	}
 }
 
@@ -368,8 +461,10 @@ queryHistoryApi({}).then((res: any) => {
 	position: relative;
 	display: flex;
 	align-items: center;
-	.comment-body{
+
+	.comment-body {
 		flex: 1;
 	}
 
-}</style>
+}
+</style>

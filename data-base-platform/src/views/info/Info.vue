@@ -44,7 +44,7 @@
 import { useUserStore } from "@/stores/user";
 import { defineAsyncComponent, ref } from "vue";
 
-import { pwdChangeApi } from "@/api/system/backgroundAccount";
+import { pwdChangeApi } from "@/api/system/user";
 import { ElMessage } from "element-plus";
 
 // 引入组件

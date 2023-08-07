@@ -35,6 +35,7 @@ export const useAuthStore = defineStore({
       const { data } = await getMenuTreeApi({ roleId });
       this.authRouteList = menuFormat(data);
       
+      
     },
   },
   persist: { key: "AuthStore", storage: localStorage, paths: ["authButtonList"] },

@@ -80,6 +80,10 @@ class RequestHttp {
         }
         // 请求成功或者后端直接返回数据流时，返回数据
         // debugger
+        // if(data.data&&data.code&&data.msg){
+        //   return data.data
+        // }
+        // debugger
         return data;
       },
       (error: AxiosError) => {

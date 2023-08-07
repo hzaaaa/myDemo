@@ -1,134 +1,204 @@
 <template>
-  <div class="system-menu-container layout-pd">
-    <el-card shadow="hover">
-      <div class="system-menu-search mb8">
-        <el-form :model="queryForm">
-          <el-row>
-            <el-form-item label="状态">
-              <el-select v-model="queryForm.enabled" clearable placeholder=" " size="default">
-                <el-option label="启用中" :value="1"></el-option>
-                <el-option label="已停用" :value="0"></el-option>
+  <div class="common-layout-system">
+    <!-- <el-form v-model="queryForm">
+      <el-row>
+        <el-col :span="24">
+          <div class="wrap" style="display: flex">
+            <el-form-item label="用户名：">
+              <el-input v-model="queryForm.name" style="width: 320px" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="状态：">
+              <el-select v-model="queryForm.enabled" clearable placeholder="请选择" style="width: 320px">
+                <el-option
+                  v-for="item in [
+                    {
+                      label: '启用',
+                      value: 1,
+                    },
+                    {
+                      label: '停用',
+                      value: 0,
+                    },
+                  ]"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
             </el-form-item>
+            <el-button type="primary" @click="searchByQueryForm">查询</el-button>
+            <el-button @click="doReset">重置</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-form> -->
 
-            <el-button size="default" type="primary" class="ml12" v-throttle="searchByQueryForm" >
-              
-              查询
-            </el-button>
-          </el-row>
-        </el-form>
-      </div>
-      <el-button size="default" type="warning" class="mb12" @click="onAddDrawer('add')" >
-        <el-icon>
-          <Plus />
-        </el-icon>
-        添加账号
-      </el-button>
-      <el-table :data="tableDataList" stripe border v-loading="tableLoading" >
-        <el-table-column prop="username" label="用户账号" />
-        <el-table-column prop="nickName" label="姓名" />
-        <el-table-column prop="deptName" label="部门" />
-        <el-table-column prop="roleName" label="角色" />
-        <el-table-column prop="phone" label="手机号" >
-          <template #default="scope">
-            {{scope.row.phone?scope.row.phone:'--'  }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="email" label="邮箱" >
-          <template #default="scope">
-            {{scope.row.email?scope.row.email:'--'  }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="enabled" label="状态">
-          <!-- <template #default="scope">
-            <el-tag type="success" v-if="scope.row.enabled === 1">启用中</el-tag>
-            <el-tag type="warning" v-else>已停用</el-tag>
-          </template> -->
-          <template #default="scope">
-            <div class="flex-align-center" v-if="scope.row.enabled === 1">
-              <div class="status-point-green"></div>
-              <div >启用中</div>
-            </div>
-            <div class="flex-align-center" v-else>
-              <div class="status-point-red"></div>
-              <div >已停用</div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column label="操作" show-overflow-tooltip header-align="center" align="center">
-          <template #default="scope">
-            <el-button size="small" text type="primary" @click="onEditDrawer(scope.row)">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="page_box">
-        
-        <el-pagination
-          :page-sizes="[20]"
-          background
-          layout="total,sizes,prev, pager, next,jumper"
-          class="msg-pagination-container"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentPageChange"
-          :current-page="pageParams.pageNum"
-          :page-size="pageParams.pageSize"
-          :total="pageParams.total"
-        />
-      </div>
-    </el-card>
+    <div class="operat-buttons">
+      <el-button type="primary" @click="openDrawer('新建')">新建</el-button>
+      <div class="space"></div>
+    </div>
 
-    <!-- <AddOrEditDrawer ref="drawer" :employeeRow="employeeRow" @confirmFunc="subData" /> -->
-    <editDialog ref="drawer" :employeeRow="employeeRow" @confirmFunc="subData" />
+    <el-table class="common-table" v-loading="tableLoading" :data="tableDataList" cell-class-name="table-cell"
+      header-cell-class-name="header-cell" border>
+      <el-table-column label="用户名" prop="username"></el-table-column>
+      <el-table-column label="姓名" prop="nickName"></el-table-column>
+      <el-table-column prop="phone" label="联系方式"></el-table-column>
+      <el-table-column prop="email" label="邮箱"></el-table-column>
+      <!-- <el-table-column prop="roleName" label="角色"></el-table-column> -->
+      <el-table-column prop="remark" label="备注"></el-table-column>
+      <el-table-column prop="enabled" label="状态">
+        <template #header>
+          <div class="flex-align-center">
+            状态
+            <!-- <el-dropdown>
+              <el-icon class="ml5"><Filter /></el-icon>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="changeEnableParam(null)">全部</el-dropdown-item>
+                  <el-dropdown-item @click="changeEnableParam(1)">已启用</el-dropdown-item>
+                  <el-dropdown-item @click="changeEnableParam(0)">已停用</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown> -->
+          </div>
+        </template>
+        <template #default="scope">
+          <span v-if="scope.row.enabled === 1" style="color: #ff9e2e">{{ "已启用" }}</span>
+          <span v-else style="color: #a8abb2">{{ "已停用" }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="210px" header-align="center" align="center">
+        <template #default="scope">
+          <el-button type="primary" link @click="openDrawer('编辑', scope.row)">编辑</el-button>
+          <el-button type="primary" link @click="resetPwdInnerAccount(scope.row.id)">重置密码</el-button>
+
+          <!-- <el-button type="primary" link @click="enableInnerAccount(scope.row.id, scope.row.enabled)">{{
+            scope.row.enabled ? "停用" : "启用"
+          }}</el-button> -->
+          <el-button type="primary" link @click="deleteUserClick(scope.row.id)">{{
+            '删除'
+          }}</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="pagination-block">
+      <el-pagination :page-sizes="pageParams.pageSizesList" background layout="total,sizes,prev, pager, next,jumper"
+        @size-change="handleSizeChange" @current-change="handleCurrentPageChange" :current-page="pageParams.pageNum"
+        :page-size="pageParams.pageSize" :total="pageParams.total" />
+    </div>
+    <AccountDrawer ref="drawerRef" @refreshData="refreshData" />
+    <ResetPasswordDialog ref="resetPasswordDialogRef" @refreshData="refreshData" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, reactive, ref, onMounted } from "vue";
-import { ElTable } from "element-plus";
-// import type { FormInstance, ElDrawer, ElTable, ElMessage, ElMessageBox } from 'element-plus';
-import { RouteRecordRaw } from "vue-router";
-import { Search, Plus } from "@element-plus/icons-vue";
-import { getUserListApi } from "@/api/system/backgroundAccount";
-import { useUserStore } from "@/stores/user";
-
-
-import editDialog from "@/views/sysManagement/backgroundAccountManagement/editDialog.vue";
+import { ref, reactive } from "vue";
 import useListPageHook from "@/hooks/listPage";
+import AccountDrawer from "./AccountDrawer.vue";
+import ResetPasswordDialog from "./ResetPasswordDialog.vue";
 
-// 初始变量
-const userStore = useUserStore();
+import {
+  getUserListApi,
+  postUserPasswordResetApi,
+  // enableInnerAccountApi,
+  deleteUserApi,
+  addUserApi,
+  updateUserApi,
+} from "@/api/system/user";
+import { ElMessage } from "element-plus";
 
-// 引用弹窗组件
-
-// const drawer = ref<any>(null);
-// const employeeRow = ref<object>([]);
-
-//#region 分页查询相关
-// 状态
-const queryForm = ref({
-  enabled: 1,
-  companyId: userStore.companyId,
-});
-
-const beanInfo = {
-  userId: null,
-  username: "",
-  nickName: "",
-  deptId: null,
-  deptName: "",
-  roleId: null,
-  roleName: "",
-  phone: "",
-  email: "",
-  newPwd: "",
-  enabled: 1, //0-未启用; 1-已启用
-  companyId: userStore.companyId,
+// 账户新建编辑抽屉
+const drawerRef = ref<InstanceType<typeof AccountDrawer> | null>(null);
+const openDrawer = (title: string, row: any = {}) => {
+  console.log(title, row);
+  const params = {
+    title,
+    isEdit: title === "编辑",
+    row: { ...row,deptId:1, },
+    api: title === "新建" ? addUserApi : updateUserApi,
+    
+  };
+  drawerRef.value?.acceptParams(params);
 };
+// 重置密码弹窗
+const resetPasswordDialogRef = ref<InstanceType<typeof ResetPasswordDialog> | null>(null);
+const openResetPasswordDialog = (id: number, pwd: string) => {
+  const params = {
+    id: id,
+    pwd: pwd,
+    
+    
+  };
+  resetPasswordDialogRef.value?.acceptParams(params);
+};
+
+//停用/启用内部用户
+// const enableInnerAccount = async (userId: number, enabled: number) => {
+//   const params = {
+//     userId: userId,
+//     enabled: enabled == 0 ? 1 : 0,
+//   };
+//   // console.log(params);
+//   try {
+//     await enableInnerAccountApi(params);
+
+//     // setTimeout(() => {
+//     refreshData();
+//     ElMessage.success("状态更新成功");
+//     // }, 2000);
+//   } catch (err) {
+//     console.log(err);
+//     // ElMessage.error("操作失败");
+//   }
+// };
+// 删除用户
+const deleteUserClick = async (userId: number) => {
+  const params = {
+    id: userId,
+  };
+  // console.log(params);
+  try {
+    await deleteUserApi(params);
+    // setTimeout(() => {
+    refreshData();
+    ElMessage.success("删除成功");
+    // }, 2000);
+  } catch (err) {
+    console.log(err);
+    // ElMessage.error("操作失败");
+  }
+};
+// 重置密码
+const resetPwdInnerAccount = async (userId: number) => {
+  const params = {
+    id: userId,
+  };
+
+  try {
+    const { data } = await postUserPasswordResetApi(params);
+    ElMessage.success("重置密码成功");
+    openResetPasswordDialog(userId, data as string);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const changeEnableParam = (value: any) => {
+  queryForm.value.enabled = value;
+  searchByQueryForm();
+  ElMessage.success("列表更新成功");
+};
+
+const queryFormRaw = {
+  name: "",
+  enabled: null,
+};
+
+const beanInfo = {};
 
 let {
   tableLoading,
-  maxHeight,
+  tableMaxHeight,
   pageParams,
   tableDataList,
   handleCurrentPageChange,
@@ -142,11 +212,93 @@ let {
   onEditDrawer,
   searchByQueryForm,
   subData,
+
+  queryForm,
+  doReset,
 } = useListPageHook(
+  // getCompanyListApi,
   getUserListApi,
 
   beanInfo,
-  queryForm
+  queryFormRaw
 );
-//#endregion
 </script>
+
+<style lang="scss" scoped>
+// 表单页面通用布局
+.common-layout-system {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: 35px;
+  padding-right: 28px;
+  padding-top: 22px;
+  border-radius: 10px;
+
+  // display: flex;
+  // height: fit-content;
+  height: calc(100% - 20px);
+  background: #fff;
+
+  .el-form {
+    margin-bottom: 0;
+
+    .wrap {
+      flex-wrap: wrap;
+
+      .el-form-item {
+        margin-bottom: 0;
+
+        .el-input {
+          width: 320px;
+        }
+      }
+
+      .el-button {
+        margin-left: 10px;
+        width: 72px;
+
+        &:first-of-type {
+          margin-left: 20px;
+        }
+      }
+    }
+  }
+
+  .el-select {
+    width: 100%;
+  }
+
+  .search-buttons {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 20px;
+  }
+
+  .operat-buttons {
+    display: flex;
+    // margin-top: 26px;
+    margin-bottom: 12px;
+    background-color: #fff;
+
+    .space {
+      flex: 1;
+    }
+  }
+
+  .pagination-block {
+    display: flex;
+    flex-direction: row-reverse;
+    margin: 29px 0;
+
+    // margin-left: 30px;
+    // margin-right: 30px;
+  }
+
+  :deep(.el-card__body) {
+    padding: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+</style>

@@ -151,7 +151,7 @@ const onSignIn = (formEl: FormInstance | undefined) => {
       temp.password = encryptor.encrypt(temp.password);
       
        loginApi({ ...temp }).then(async (res:any) => {
-        res=res.data;
+        
         // 1. 存储用户信息
         Session.set("token", res.data.token);
         userStore.setToken(res.data.token);

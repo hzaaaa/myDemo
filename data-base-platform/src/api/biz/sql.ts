@@ -15,7 +15,8 @@ export const getDatabaseApi = (params: any) => {
  */
 
 export const executeApi = (params: any) => {
-  return http.get<any>(PORTBiz + `/query/execute`,params,{
+  return http.post<any>(PORTBiz + `/query/execute`,params,{
+    params,
     timeout:5*60*1000
   });
 };
@@ -33,7 +34,7 @@ export const queryHistoryApi = (params: any) => {
  */
 
 export const updateColumnCommentApi = (params: any) => {
-  return http.get<any>(PORTBiz + `/table/updateColumnComment`,params,{
+  return http.post<any>(PORTBiz + `/table/updateColumnComment`,params,{
     timeout:5*60*1000
   });
 };
@@ -42,7 +43,7 @@ export const updateColumnCommentApi = (params: any) => {
  */
 
 export const updateTableCommentApi = (params: any) => {
-  return http.get<any>(PORTBiz + `/table/updateTableComment`,params,{
+  return http.post<any>(PORTBiz + `/table/updateTableComment`,params,{
     timeout:5*60*1000
   });
 };
@@ -51,7 +52,7 @@ export const updateTableCommentApi = (params: any) => {
  */
 
 export const updateDatabaseCommentApi = (params: any) => {
-  return http.get<any>(PORTBiz + `/table/updateDatabaseComment`,params,{
+  return http.post<any>(PORTBiz + `/table/updateDatabaseComment`,params,{
     timeout:5*60*1000
   });
 };

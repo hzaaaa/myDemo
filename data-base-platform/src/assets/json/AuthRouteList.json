@@ -42,7 +42,7 @@
           "name": "Account",
           "component": "/sysManagement/backgroundAccountManagement/index",
           "meta": {
-            "title": "后台账号管理",
+            "title": "用户管理",
             "isKeepAlive": true,
             "isHide": false
           }

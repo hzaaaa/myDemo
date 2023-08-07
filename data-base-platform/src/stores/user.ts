@@ -44,3 +44,20 @@ export const useUserStore = defineStore({
   },
   persist: { key: "UserStore", storage: localStorage },
 });
+export const useUserStoreSessionStorage = defineStore({
+	// id: 必须，在所有 Stores 中唯一
+	id: "UserStoreSession",
+	state: (): any => ({
+		// 用户操作
+		behavior: "",
+	}),
+	getters: {
+		behaviorGet: (state) => state.behavior,
+	},
+	actions: {
+		setBehavior(behavior: "add" | "modify" | "view") {
+			this.behavior = behavior;
+		},
+	},
+	persist: { key: "UserStoreSession", storage: sessionStorage },
+});

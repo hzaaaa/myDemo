@@ -15,6 +15,7 @@ declare module '*.js';
 /* eslint-disable */
 declare interface Window {
 	nextLoading: boolean;
+
 }
 
 

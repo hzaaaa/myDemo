@@ -25,7 +25,7 @@ export const logoutApi = () => {
  */
 export const getAuthRouteListApi = () => {
   // return http.get<RouteItem[]>(PORTAuth + `/menu/list`);
-  debugger
+  
   return Promise.resolve(AuthRouteList);
 };
 
