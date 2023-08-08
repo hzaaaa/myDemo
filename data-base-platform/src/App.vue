@@ -1,6 +1,6 @@
 <template>
   <el-config-provider :locale="locale">
-    <RouterView></RouterView>
+    <RouterView ></RouterView>
   </el-config-provider>
 </template>
 

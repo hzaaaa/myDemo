@@ -2,9 +2,10 @@
   <el-dropdown trigger="click">
     <div class="flex-center pointer">
       <Avatar />
-      <span class="ml4 mr12 font16">{{ userStore.userInfo.sysUser.username }}</span>
+      <span class="ml4 mr12 font16">{{ userStore?.userInfo?.sysUser?.username }}</span>
       <el-icon><arrow-down /></el-icon>
     </div>
+    
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item @click="router.push('/baseinfo')">
@@ -15,6 +16,7 @@
           <el-icon><Refresh /></el-icon>
           同步库表
         </el-dropdown-item>
+        
         <el-dropdown-item @click="logout">
           <el-icon><SwitchButton /></el-icon>
           退出登录
@@ -22,6 +24,9 @@
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  <Teleport to="body" v-if="refreshLoading"  >
+    <div style="height: 100vh;width: 100vw;position: absolute;top: 0;left: 0;" v-loading="refreshLoading"></div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -36,7 +41,7 @@ import {getDatabaseApi} from "@/api/biz/sql"
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-
+const refreshLoading =ref(false)
 // 退出登录
 const logout = () => {
   ElMessageBox.confirm("确认退出吗?", "提示", {
@@ -58,11 +63,15 @@ const logout = () => {
     .catch(() => {});
 };
 const refreshClick = ()=>{
+  refreshLoading.value=true;
   getDatabaseApi({}).then((res:any)=>{
     console.log('getDatabaseApi',res);
-    if(res.code===200){
+    // if(res.code===200){
+      router.go(0);
       ElMessage.success('同步库表成功');
-    }
+    // }
+  }).finally(()=>{
+    refreshLoading.value=false
   })
 }
 </script>

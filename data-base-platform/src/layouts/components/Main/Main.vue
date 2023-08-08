@@ -1,7 +1,7 @@
 <template>
   <Tabs v-if="themeStore.tabs" />
   <el-main>
-    <router-view v-slot="{ Component, route }">
+    <router-view :key="route.fullPath" v-slot="{ Component, route }">
       <transition appear name="fade-transform" mode="out-in">
         <keep-alive :include="keepAliveStore.keepAliveName">
           <component :is="Component" :key="route.path" />
@@ -15,7 +15,7 @@
 import Tabs from "@/layouts/components/Tabs/Tabs.vue";
 import { useThemeStore } from "@/stores/theme";
 import { useKeepAliveStore } from "@/stores/keepAlive";
-
+const route = useRoute();
 const themeStore = useThemeStore();
 const keepAliveStore = useKeepAliveStore();
 </script>

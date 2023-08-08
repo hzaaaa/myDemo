@@ -3,7 +3,7 @@
     v-model="drawerVisible"
     :title="`${drawerProps.title}账号`"
     :close-on-click-modal="false"
-    @open=""
+    @open="getRoleSelector"
     @close="closeResetDrawer"
   >
     <el-form ref="accountFormRef" :model="drawerProps.row" :rules="accountFormRules" label-width="90px">
@@ -20,6 +20,11 @@
         <el-input v-model="drawerProps.row!.email" place="请输入企业邮箱"></el-input>
       </el-form-item>
       <div class="edit-forbidden" v-if="!drawerProps.isEdit">
+        <el-form-item label="角色" prop="roleId">
+					<el-select v-model="drawerProps.row!.roleId" style="width: 100%;"  >
+						<el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id" />
+					</el-select>
+				</el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="drawerProps.row!.password" placeholder="不少于6位，需包含数字和字母"></el-input>
         </el-form-item>
@@ -49,6 +54,7 @@ import { FormInstance, FormRules } from "element-plus";
 
 import { validateUsername, validateNickName, validateMobile, validateEmail, validatePwd } from "@/utils/validator";
 import { ElMessage } from "element-plus";
+import { getRoleListApi as getRoleSelectorApi } from "@/api/system/role";
 interface DrawerProps {
   title: string;
   isEdit: boolean;
@@ -80,13 +86,23 @@ const accountFormRules = reactive<FormRules>({
   username: [{ required: true, validator: validateUsername, trigger: "blur" }],
   phone: [{ validator: validateMobile, trigger: "blur" }],
   email: [{ validator: validateEmail, trigger: "blur" }],
-
+  roleId: [{ required: true, message: "请选择角色！", trigger: "blur" }],
   password: [{ required: true, validator: validatePwd, trigger: "blur" }],
   enabled: [{ required: true, message: "请选择启用状态！", trigger: "change" }],
 });
 
-const roleList = ref<any>();
-
+const roleList = ref<any>([]);
+  const getRoleSelector = async () => {
+	if (!drawerProps.value.isEdit) {
+		try {
+			const { data } = await getRoleSelectorApi({});
+      // debugger
+			roleList.value = data.list;
+		} catch (err) {
+			console.log(err);
+		}
+	}
+};
 const buttonLoading = ref(false);
 const submit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
@@ -103,19 +119,26 @@ const submit = async (formEl: FormInstance | undefined) => {
     buttonLoading.value = true;
     try {
       if (!drawerProps.value.isEdit) {
-        let params: any = {
-          username: drawerProps.value.row.username,
-          nickName: drawerProps.value.row.nickName,
-          phone: drawerProps.value.row.phone,
-          email: drawerProps.value.row.email,
-
-          password: drawerProps.value.row.password,
-          enabled: drawerProps.value.row.enabled,
-          remark: drawerProps.value.row.remark,
+        // let params: any = {
+        //   username: drawerProps.value.row.username,
+        //   nickName: drawerProps.value.row.nickName,
+        //   phone: drawerProps.value.row.phone,
+        //   email: drawerProps.value.row.email,
+        //   roleId: drawerProps.value.row.roleId,
+        //   roleIdList:[drawerProps.value.row.roleId],
+        //   password: drawerProps.value.row.password,
+        //   enabled: drawerProps.value.row.enabled,
+        //   remark: drawerProps.value.row.remark,
           
-        };
+        // };
         // if(drawerProps.value.row.organizationId) drawerProps.value.row["organizationId"] = drawerProps.value.organizationId;
-        await drawerProps.value.api!(drawerProps.value.row);
+        
+        let params ={
+          ...drawerProps.value.row
+        } 
+        params.roleIdList = [params.roleId];
+        delete params.roleId;
+        await drawerProps.value.api!(params);
         ElMessage.success("创建成功");
         emit("refreshData");
         drawerVisible.value = false;

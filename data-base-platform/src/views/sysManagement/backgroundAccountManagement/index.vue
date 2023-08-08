@@ -40,33 +40,48 @@
 
     <el-table class="common-table" v-loading="tableLoading" :data="tableDataList" cell-class-name="table-cell"
       header-cell-class-name="header-cell" border>
-      <el-table-column label="用户名" prop="username"></el-table-column>
-      <el-table-column label="姓名" prop="nickName"></el-table-column>
-      <el-table-column prop="phone" label="联系方式"></el-table-column>
-      <el-table-column prop="email" label="邮箱"></el-table-column>
-      <!-- <el-table-column prop="roleName" label="角色"></el-table-column> -->
-      <el-table-column prop="remark" label="备注"></el-table-column>
-      <el-table-column prop="enabled" label="状态">
+      <el-table-column label="用户名" prop="username">
+        <template #default="scope">
+          {{ scope.row.username ? scope.row.username : '--' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="姓名" prop="nickName">
+        <template #default="scope">
+          {{ scope.row.nickName ? scope.row.nickName : '--' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="phone" label="联系方式">
+        <template #default="scope">
+          {{ scope.row.phone ? scope.row.phone : '--' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="email" label="邮箱">
+        <template #default="scope">
+          {{ scope.row.email ? scope.row.email : '--' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="roleName" label="角色">
+        <template #default="scope">
+          {{ scope.row.roleName ? scope.row.roleName : '--' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="remark" label="备注">
+        <template #default="scope">
+          {{ scope.row.remark ? scope.row.remark : '--' }}
+        </template>
+      </el-table-column>
+      <!-- <el-table-column prop="enabled" label="状态">
         <template #header>
           <div class="flex-align-center">
             状态
-            <!-- <el-dropdown>
-              <el-icon class="ml5"><Filter /></el-icon>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click="changeEnableParam(null)">全部</el-dropdown-item>
-                  <el-dropdown-item @click="changeEnableParam(1)">已启用</el-dropdown-item>
-                  <el-dropdown-item @click="changeEnableParam(0)">已停用</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown> -->
+            
           </div>
         </template>
         <template #default="scope">
           <span v-if="scope.row.enabled === 1" style="color: #ff9e2e">{{ "已启用" }}</span>
           <span v-else style="color: #a8abb2">{{ "已停用" }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" width="210px" header-align="center" align="center">
         <template #default="scope">
           <el-button type="primary" link @click="openDrawer('编辑', scope.row)">编辑</el-button>
@@ -75,7 +90,7 @@
           <!-- <el-button type="primary" link @click="enableInnerAccount(scope.row.id, scope.row.enabled)">{{
             scope.row.enabled ? "停用" : "启用"
           }}</el-button> -->
-          <el-button type="primary" link @click="deleteUserClick(scope.row.id)">{{
+          <el-button type="primary" link @click="deleteUserClick(scope.row)">{{
             '删除'
           }}</el-button>
         </template>
@@ -105,7 +120,7 @@ import {
   addUserApi,
   updateUserApi,
 } from "@/api/system/user";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 // 账户新建编辑抽屉
 const drawerRef = ref<InstanceType<typeof AccountDrawer> | null>(null);
@@ -114,9 +129,9 @@ const openDrawer = (title: string, row: any = {}) => {
   const params = {
     title,
     isEdit: title === "编辑",
-    row: { ...row,deptId:1, },
+    row: { ...row, deptId: 1, },
     api: title === "新建" ? addUserApi : updateUserApi,
-    
+
   };
   drawerRef.value?.acceptParams(params);
 };
@@ -126,8 +141,8 @@ const openResetPasswordDialog = (id: number, pwd: string) => {
   const params = {
     id: id,
     pwd: pwd,
-    
-    
+
+
   };
   resetPasswordDialogRef.value?.acceptParams(params);
 };
@@ -152,21 +167,37 @@ const openResetPasswordDialog = (id: number, pwd: string) => {
 //   }
 // };
 // 删除用户
-const deleteUserClick = async (userId: number) => {
-  const params = {
-    id: userId,
-  };
-  // console.log(params);
-  try {
-    await deleteUserApi(params);
-    // setTimeout(() => {
-    refreshData();
-    ElMessage.success("删除成功");
-    // }, 2000);
-  } catch (err) {
-    console.log(err);
-    // ElMessage.error("操作失败");
-  }
+const deleteUserClick = async (row: any) => {
+
+
+
+  ElMessageBox.confirm("确定删除该用户吗？", `删除用户-${row.username}`, {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    customClass: "delete-message",
+    // type: "warning",
+  })
+    .then(() => {
+      let deleteApi = null;
+      let api = deleteUserApi;
+      //文件
+      deleteApi = api;
+
+      //待续未完
+      deleteApi({
+        id: row.id,
+      }).then(() => {
+        console.log("delete success", row);
+        ElMessage({
+          type: "success",
+          message: "删除成功",
+        });
+        refreshData();
+      });
+    })
+    .catch(() => {
+
+    });
 };
 // 重置密码
 const resetPwdInnerAccount = async (userId: number) => {

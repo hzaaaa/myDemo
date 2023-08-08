@@ -88,8 +88,8 @@ const onSubmit = () => {
   deptDialogFormRef.value.validate((valid) => {
     if (valid) {
       emit("submit", {
-        oldPwd: state.ruleForm.lastPassword,
-        newPwd: state.ruleForm.newPassword,
+        oldPassword: state.ruleForm.lastPassword,
+        newPassword: state.ruleForm.newPassword,
       });
     } else {
       console.log("error submit");

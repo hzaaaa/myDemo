@@ -4,7 +4,7 @@
     <el-header class="layout-header">
       <div class="header-lf">
         <div class="layout-logo flex-center">
-          <!-- <img src="@/assets/images/login/logoName@2x.png" alt="logo" /> -->
+          <img src="@/assets/images/login/logoName@2x.png" alt="logo" />
         </div>
       </div>
       <div class="header-ri">
@@ -73,11 +73,15 @@ const collapse = () => {
 .layout {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   .layout-header {
     flex: 0 0 auto;
   }
   .layout-body {
-    flex-shrink: 1;
+    // flex-shrink: 1;
+    height: 0;
+    flex:1;
   }
   .layout-aside {
     display: flex;
@@ -86,7 +90,7 @@ const collapse = () => {
     height: 100%;
     color: #303133;
     transition: all 0.3s;
-    padding-top: 20px;
+    // padding-top: 20px;
     position: relative;
     .collapse-icon {
       width: 32px;
@@ -109,7 +113,7 @@ const collapse = () => {
 
   .layout-logo {
     img {
-      width: 160px;
+      width: 200px;
       height: 30px;
     }
   }

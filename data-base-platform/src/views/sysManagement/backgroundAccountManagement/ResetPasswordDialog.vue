@@ -1,12 +1,14 @@
 <template>
   <el-dialog v-model="dialogVisible" title="重置密码" class="pwd-reset-dialog" width="520px" style="height: 240px">
-    <span>新密码</span><span>{{ dialogProps?.pwd }}</span
-    ><span
+    <span>新密码</span><span>123456</span>
+    <!-- <span>新密码</span><span>{{ dialogProps?.pwd }}</span> -->
+    <span
       name="icon-fuzhi"
       style="margin-left: 10px; cursor: pointer; color: var(--el-color-primary)"
-      @click="copyTextToClipboard(dialogProps!.pwd)"
+      @click="copyTextToClipboard(`123456`)"
       >复制</span
     >
+    <!-- @click="copyTextToClipboard(dialogProps!.pwd)" -->
     <template #footer>
       <!-- <el-button @click="dialogVisible = false">取消</el-button> -->
       <el-button type="primary" @click="dialogVisible = false">确定</el-button>

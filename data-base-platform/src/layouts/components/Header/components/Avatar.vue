@@ -10,7 +10,7 @@ const userStore = useUserStore();
 // const acronymName = computed(() => userStore.username);
 // userStore.userInfo;
 // debugger
-const acronymName = computed(() => userStore.userInfo.sysUser.username.slice(0, 1).toUpperCase());
+const acronymName = computed(() => userStore?.userInfo?.sysUser?.username?.slice(0, 1).toUpperCase());
 </script>
 
 <style scoped lang="scss">

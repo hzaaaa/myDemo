@@ -1,7 +1,8 @@
 <template>
   <div>
     <!-- :before-close="handleClose" -->
-    <el-dialog
+    <!-- <el-dialog -->
+    <el-drawer
       v-model="showDrawer"
       :close-on-click-modal="false"
       :title="(userStore.behaviorGet === 'add' ? '添加' : '编辑') + '角色'"
@@ -11,9 +12,9 @@
       <el-form ref="queryFormRef" :model="props.employeeRow" :label-width="80" :rules="rules">
         <el-row>
             <el-col :span="24">
-              <el-form-item label="角色名称" prop="roleName">
+              <el-form-item label="角色名称" prop="name">
                 <el-input
-                  v-model="props.employeeRow.roleName"
+                  v-model="props.employeeRow.name"
                   autocomplete="off"
                   maxlength="10"
                   placeholder="请输入角色名称"
@@ -36,7 +37,7 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="24">
+            <!-- <el-col :span="24">
               <el-form-item label="菜单权限">
                 <el-tree
                   v-if="!treeReloading"
@@ -53,7 +54,7 @@
                   :setCurrentKey="setCurrentKey"
                 />
               </el-form-item>
-            </el-col>
+            </el-col> -->
           </el-row>
       </el-form>
       <template #footer>
@@ -64,18 +65,18 @@
           }}</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, defineEmits, defineExpose, reactive, onMounted, getCurrentInstance, nextTick ,watch} from "vue";
-import { useRouter } from "vue-router";
+// import { ref,  reactive, onMounted, getCurrentInstance, nextTick ,watch} from "vue";
+// import { useRouter } from "vue-router";
 import { ElDrawer, ElMessage, ElMessageBox, ElTree } from "element-plus";
 // import { Permission } from '/types'
 import type { FormInstance, FormRules } from "element-plus";
 import { Close } from "@element-plus/icons-vue";
-import { getMenuTreeApi, getRoleDetailsApi, postRoleUpdateApi } from "@/api/system/role";
-import { useUserStore } from "@/stores/user";
+import { getMenuTreeApi, getRoleDetailsApi, addRoleApi,updateRoleApi } from "@/api/system/role";
+import { useUserStoreSessionStorage as useUserStore  } from "@/stores/user";
 
 import useDrawerhook from "@/hooks/drawerhook";
 const userStore = useUserStore();
@@ -100,7 +101,7 @@ const validateRoleName = (rule: any, value: string, callback: any) => {
 
 // 表单
 const rules = reactive({
-  roleName: [{ required: true, validator: validateRoleName, message: "请输入角色名称", trigger: "blur" }],
+  name: [{ required: true, validator: validateRoleName, message: "请输入角色名称", trigger: "blur" }],
 });
 
 // 菜单节点初始化
@@ -115,43 +116,43 @@ const defaultProps = {
 const treeRef = ref();
 
 // 树组件重新加载
-const treeReloading = ref<boolean>(false);
+// const treeReloading = ref<boolean>(false);
 // 当前选中的项
 const setCurrentKey = ref<any[]>([]);
 
 // 初始化加载 树
 onMounted(() => {
-  getRoleMenusInitTree({});
+  // getRoleMenusInitTree({});
 });
 
 // 获取所有节点
-const getRoleMenusInitTree = async (obj: any) => {
-  menuTree.value = [];
-  await getMenuTreeApi({ ...obj }).then((response) => {
-    if (response.code == 200) {
-      if (Array.isArray(response.data)) {
-        menuTree.value = response.data;
-        // autoExpandParentNode();
-      }
-    } else {
-    }
-  });
-};
-const getRoleMenusInitSelected = async (obj: any) => {
-  await getMenuTreeApi({ ...obj }).then((response) => {
-    if (response.code == 200) {
-      if (Array.isArray(response.data)) {
-        // menuTree.value = response.data;
-        childrenIds = [];
-        findChildId(response.data);
-        console.log("childrenIds", childrenIds);
+// const getRoleMenusInitTree = async (obj: any) => {
+//   menuTree.value = [];
+//   await getMenuTreeApi({ ...obj }).then((response) => {
+//     if (response.code == 200) {
+//       if (Array.isArray(response.data)) {
+//         menuTree.value = response.data;
+//         // autoExpandParentNode();
+//       }
+//     } else {
+//     }
+//   });
+// };
+// const getRoleMenusInitSelected = async (obj: any) => {
+//   await getMenuTreeApi({ ...obj }).then((response) => {
+//     if (response.code == 200) {
+//       if (Array.isArray(response.data)) {
+//         // menuTree.value = response.data;
+//         childrenIds = [];
+//         findChildId(response.data);
+//         console.log("childrenIds", childrenIds);
 
-        treeRef.value.setCheckedKeys(childrenIds);
-      }
-    } else {
-    }
-  });
-};
+//         treeRef.value.setCheckedKeys(childrenIds);
+//       }
+//     } else {
+//     }
+//   });
+// };
 let childrenIds: any = [];
 const findChildId = (list: any) => {
   list.forEach((item: any) => {
@@ -165,34 +166,33 @@ const findChildId = (list: any) => {
 };
 
 // 重新加载树组件，防止无法默认展开数据
-async function reloadTree() {
-  await nextTick();
-  treeReloading.value = true;
-  await nextTick();
-  treeReloading.value = false;
-}
+// async function reloadTree() {
+//   await nextTick();
+//   treeReloading.value = true;
+//   await nextTick();
+//   treeReloading.value = false;
+// }
 
-let validFormInfoList = [
-  {
-    name: "menuIdList",
-    comparelist: [
-      {
-        compare: (value: any) => {
-          // debugger
-          return value.length > 0;
-        },
-        errorInfo: "每个角色至少需勾选1个权限",
-      },
-    ],
-  },
+let validFormInfoList = <any>[
+  // {
+  //   name: "menuIdList",
+  //   comparelist: [
+  //     {
+  //       compare: (value: any) => {
+  //         // debugger
+  //         return value.length > 0;
+  //       },
+  //       errorInfo: "每个角色至少需勾选1个权限",
+  //     },
+  //   ],
+  // },
 ];
 
-let transRules = [
-  (target: any, source: any) => {
-    // target["menuIdList"] = treeRef.value.getCheckedKeys(true);
-    // menuIdList: 
-    target["menuIdList"] = treeRef.value.getCheckedKeys(false).concat(treeRef.value.getHalfCheckedKeys());
-  },
+let transRules =<any> [
+  // (target: any, source: any) => {
+    
+  //   target["menuIdList"] = treeRef.value.getCheckedKeys(false).concat(treeRef.value.getHalfCheckedKeys());
+  // },
 ];
 
 // 提交保存
@@ -207,7 +207,7 @@ const onSave = async (formEl: FormInstance | undefined) => {
         if (!isSubmitAble) {
           return;
         }
-        postRoleUpdateApi(requestTempt).then((response) => {
+        addRoleApi(requestTempt).then((response) => {
           if (response.code === 200) {
             ElMessage.success("创建成功");
             showDrawer.value = false;
@@ -226,10 +226,14 @@ const onSave = async (formEl: FormInstance | undefined) => {
       if (valid) {
         let requestTempt = form2RequestParams(props.employeeRow);
         let isSubmitAble = validOfBeforeSubmit(requestTempt);
+        
         if (!isSubmitAble) {
           return;
         }
-        postRoleUpdateApi(requestTempt).then((response) => {
+        let {id,name,description} =requestTempt;
+        updateRoleApi({
+          id,name,description
+        }).then((response) => {
           if (response.code === 200) {
             ElMessage.success("修改成功");
             showDrawer.value = false;
@@ -249,11 +253,11 @@ let openCallBack = async () => {
   // debugger
   if (userStore.behavior !== "modify") {
     //新增
-    // getRoleMenus({});
+    
   } else {
     //修改
-    // getRoleMenus({ roleId: props.employeeRow.roleId })
-    getRoleMenusInitSelected({ roleId: props.employeeRow.roleId });
+    
+    // getRoleMenusInitSelected({ roleId: props.employeeRow.roleId });
   }
 };
 let { handleClose, showDrawer, timer, loading, queryFormRef, isOpen, isClose, validOfBeforeSubmit, form2RequestParams } =
@@ -264,12 +268,12 @@ defineExpose({
   isOpen,
   isClose,
 });
-
-watch(showDrawer, (newX) => {
-  // debugger
-  if(!newX){
-    treeRef.value!.setCheckedKeys([], false)
-  } 
-})
+//树相关
+// watch(showDrawer, (newX) => {
+//   // debugger
+//   if(!newX){
+//     treeRef.value!.setCheckedKeys([], false)
+//   } 
+// })
 </script>
 <style lang="scss" scoped></style>

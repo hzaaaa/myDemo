@@ -22,7 +22,7 @@ export const useCommentHook = (dataBase: any,updateDatabaseCommentApi:any,router
       console.log('editCommentapi',editCommentapi)
       
         ElMessage.success('更新成功')
-        router.go(0)
+        router.go(0);
         
       
     })

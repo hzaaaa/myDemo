@@ -5,15 +5,19 @@
         <div class="title">个人信息</div>
         <div class="row">
           <div class="label">用户名</div>
-          <div class="content">{{ userStore.userInfo.sysUser.username }}</div>
+          <div class="content">{{ userStore?.userInfo?.sysUser?.username ? userStore?.userInfo?.sysUser?.username:'--' }}</div>
+        </div>
+        <div class="row">
+          <div class="label">姓名</div>
+          <div class="content">{{ userStore?.userInfo?.sysUser?.nickName ? userStore?.userInfo?.sysUser?.nickName:'--' }}</div>
         </div>
         <div class="row">
           <div class="label">手机号</div>
-          <div class="content">{{ userStore.userInfo.sysUser.phone }}</div>
+          <div class="content">{{ userStore?.userInfo?.sysUser?.phone ? userStore?.userInfo?.sysUser?.phone :'--' }}</div>
         </div>
         <div class="row">
           <div class="label">邮箱</div>
-          <div class="content">{{ userStore.userInfo.sysUser.email }}</div>
+          <div class="content">{{ userStore?.userInfo?.sysUser?.email ? userStore?.userInfo?.sysUser?.email :'--'}}</div>
         </div>
         <div class="row">
           <div class="label">登录密码</div>
@@ -23,7 +27,7 @@
         </div>
         <div class="row">
           <div class="label">创建时间</div>
-          <div class="content">{{ userStore.userInfo.sysUser.createTime }}</div>
+          <div class="content">{{ userStore?.userInfo?.sysUser?.createTime }}</div>
         </div>
       </div>
       <!-- <div class="separator"></div>

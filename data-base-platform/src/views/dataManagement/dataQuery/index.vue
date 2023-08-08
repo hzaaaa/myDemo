@@ -1,17 +1,17 @@
 <template>
-	<el-card shadow="hover">
-		<div class="wrap">
+	<!-- <el-card shadow="hover"> -->
+		<div class="common-layout-system"  v-loading="sqlLoading">
 
 			<div class="table-list">
 				<div   v-for="item_table in tableList">
 
-					<div class="table-single" @dblclick="tableClick(item_table)" :class="currentSelectTable === item_table ? 'active' : ''">{{ item_table.name }}</div>
+					<div class="table-single" @dblclick="tableClick(item_table)" :class="currentSelectTable === item_table ? 'active' : ''">{{ `${item_table.name}` }}{{item_table.comment?`（${item_table.comment}）`:''  }}</div>
 					<div class="table-single pl25" @dblclick="varClick(item_var)"
 						:class="currentSelectVar === item_var ? 'active' : ''" v-show="currentSelectTable === item_table"
-						v-for="item_var in currentSelectTable.column">{{ item_var.name }}</div>
+						v-for="item_var in currentSelectTable.column">{{ item_var.name }}{{item_var.comment?`（${item_var.comment}）`:''  }}</div>
 				</div>
 			</div>
-			<div class="sql-block" v-loading="sqlLoading">
+			<div class="sql-block">
 				<div class="sql-input">
 
 					<textarea  ref="textareaRef" v-model="stringInput" />
@@ -29,12 +29,12 @@
 
 							查询结果
 						</div>
-						<el-button class="export" size="default" type="primary">
+						<el-button class="export" @click="exportClick" size="default" type="primary">
 
 							导出
 						</el-button>
 					</div>
-					<div class="result-list">
+					<div class="result-list"  :class="result_data.length===0?'result-empty':''">
 						<el-auto-resizer>
 							<template #default="{ height, width }">
 								<el-table-v2 :columns="columns" :data="result_data" :width="width" :height="height" fixed />
@@ -81,7 +81,7 @@
 				</div>
 			</div>
 		</div>
-	</el-card>
+	<!-- </el-card> -->
 </template>
 
 <script setup  lang="ts">
@@ -122,7 +122,19 @@ import { useDataBase } from '@/stores/dataBase'
 import { useHistoryHook } from './historyHook'
 import { useCommentHook } from './commentHook'
 import { useTableListHook } from './tableListHook';
+import { exportFile} from '@/utils/common'
+import { ElMessage } from 'element-plus';
 
+
+const exportClick =()=>{
+	if(result_data.value.length===0){
+		ElMessage.error('暂无数据')
+		
+	}else{
+
+		exportFile(result_data.value,'sql_result')
+	}
+}
 let route = useRoute();
 let router = useRouter();
 console.log('route', route)
@@ -316,6 +328,21 @@ const historyDblclick = (item_table: any) => {
 </script>
 
 <style lang="scss" scoped>
+.common-layout-system {
+  display: flex;
+  // flex-direction: column;
+  flex: 1;
+  padding-left: 35px;
+  padding-right: 28px;
+  padding-top: 22px;
+  padding-bottom: 22px;
+  border-radius: 10px;
+
+  // display: flex;
+  // height: fit-content;
+  height: calc(100% - 20px);
+  background: #fff;
+}
 :deep(.el-table-v2__row-cell) {
 	flex-grow: 1 !important;
 }
@@ -371,6 +398,9 @@ const historyDblclick = (item_table: any) => {
 	.sql-input {
 		border: 1px solid #e3e3e3;
 		position: relative;
+		height: 0;
+    flex: 1;
+		min-height: 200px;
 
 		.query {
 			position: absolute;
@@ -381,8 +411,8 @@ const historyDblclick = (item_table: any) => {
 
 	.result-wrap {
 		// background: red;
-		flex: 1;
-		overflow: auto;
+		flex: 2;
+		
 		height: 0;
 		border: 1px solid #e3e3e3;
 		display: flex;
@@ -406,7 +436,7 @@ const historyDblclick = (item_table: any) => {
 
 		.result-list {
 			flex: 1;
-
+			overflow: auto;
 
 		}
 	}
@@ -420,14 +450,17 @@ const historyDblclick = (item_table: any) => {
 
 	.comment-block {
 		border: 1px solid #e3e3e3;
-		height: 302px;
+		// height: 302px;
+		height:0;
+		min-height: 200px;
+		flex:1;
 		position: relative;
 
 		.comment-body {
 
 			.query {
 				position: absolute;
-				right: 15px;
+				right: 10px;
 				bottom: 10px;
 			}
 		}
@@ -435,7 +468,7 @@ const historyDblclick = (item_table: any) => {
 	}
 
 	.history-block {
-		flex: 1;
+		flex: 2;
 		height: 0;
 		border: 1px solid #e3e3e3;
 		display: flex;
@@ -449,9 +482,7 @@ const historyDblclick = (item_table: any) => {
 	}
 }
 
-:deep(.CodeMirror) {
-	// border: 1px solid #e3e3e3;
-}
+
 
 .title-head {
 	height: 50px;
@@ -466,5 +497,14 @@ const historyDblclick = (item_table: any) => {
 		flex: 1;
 	}
 
+}
+:deep(.CodeMirror){
+	height:100% !important;
+}
+.result-empty{
+
+	:deep(.el-table-v2__header-row){
+		border-bottom:0;
+	}
 }
 </style>

@@ -9,7 +9,7 @@
     @keyup.enter="onSignIn(loginFormRef)"
   >
     <el-form-item class="login-animation1" label="用户名">
-      <el-input text v-model="state.ruleForm.username" autocomplete="off" @keyup="getInputVal" class="deep_input">
+      <el-input text v-model="state.ruleForm.username" autocomplete="off"  class="deep_input">
         <!-- <template #prefix>
 					<el-icon class="el-input__icon">
 						<User />
@@ -22,27 +22,16 @@
         :type="state.isShowPassword ? 'text' : 'password'"
         v-model="state.ruleForm.password"
         autocomplete="off"
-        @keyup="getInputVal"
+        
         class="deep_input"
       >
-        <!-- <template #prefix>
-					<el-icon class="el-input__icon">
-						<Unlock />
-					</el-icon>
-				</template> -->
-        <!-- <template #suffix>
-					<i class="iconfont el-input__icon login-content-password"
-						:class="state.isShowPassword ? 'icon-yincangmima' : 'icon-xianshimima'"
-						@click="state.isShowPassword = !state.isShowPassword">
-					</i>
-				</template> -->
+        
       </el-input>
     </el-form-item>
   </el-form>
   <div class="login-btn">
-    <!-- <el-button @click="login(loginFormRef)" type="primary">登录</el-button> -->
+    
     <el-button
-      v-if="signInShow"
       type="primary"
       class="login-content-submit login_success_btn"
       round
@@ -51,9 +40,7 @@
     >
       <span>登 录</span>
     </el-button>
-    <el-button v-if="!signInShow" type="primary" round class="login_default_btn">
-      <span>登 录</span>
-    </el-button>
+    
   </div>
 </template>
 
@@ -69,7 +56,7 @@ import { useAuthStore } from "@/stores/auth";
 import { Session } from "@/utils/storage";
 import { initDynamicRoutes ,routerToFirstPage} from "@/routers/backEnd";
 import { JSEncrypt } from "jsencrypt";
-
+import { useDataBase } from '@/stores/dataBase'
 const publicKey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7nJdZ9t1X4gpUG86UbcrqsfpzfQercalFcAb1j+HJdUzRwGMQ46MttQ3kgK8sqFXrfq3isL7hox6rA5ZIiC7IMUSRRJXZNQdtG+hS2eBue7xWFJ4G9MUM4zGEmyjDs6W1IqrgQ6quF42XEWzFytp8yoXcmUd1/PuoU9mZsHB37QIDAQAB';//生成的公
 const encryptor = new JSEncrypt()
 encryptor.setPublicKey(publicKey) // 设置公钥
@@ -164,7 +151,13 @@ const onSignIn = (formEl: FormInstance | undefined) => {
         // await authStore.getAuthButtonList();
         // routerToFirstPage();
         
-        router.push('/baseinfo')
+        let dataBaseStore = useDataBase();
+        if(dataBaseStore.dataBaseList.length===0){
+          router.push('/sysManagement/backgroundAccountManagement/index')
+        }else{
+          let dataBase = dataBaseStore.dataBaseList[0]
+          router.push(`/dataManagement/${dataBase.name}`)
+        }
       });
 
       // getCompanyInformationApi({}).then((res: any) => {

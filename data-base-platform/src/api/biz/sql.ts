@@ -10,6 +10,7 @@ export const getDatabaseApi = (params: any) => {
     timeout:5*60*1000
   });
 };
+
 /**
  * @name  查询sql
  */
