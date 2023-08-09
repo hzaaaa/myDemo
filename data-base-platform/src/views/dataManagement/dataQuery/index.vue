@@ -129,7 +129,7 @@ import { ElMessage } from 'element-plus';
 const exportClick =()=>{
 	if(result_data.value.length===0){
 		ElMessage.error('暂无数据')
-		
+
 	}else{
 
 		exportFile(result_data.value,'sql_result')
@@ -377,6 +377,8 @@ const historyDblclick = (item_table: any) => {
 	color: #303133;
 	cursor: pointer;
 	padding-left: 10px;
+	width: 100%;
+	@extend .text-no-wrap;
 }
 
 .table-single.active {

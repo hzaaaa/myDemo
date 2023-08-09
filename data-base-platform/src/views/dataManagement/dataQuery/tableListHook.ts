@@ -10,6 +10,16 @@ const currentSelectTable = <any>ref({
 });
 const tableList = <any>ref([]);
 tableList.value = dataBase.table;
+onMounted(()=>{
+  
+  // nextTick(()=>{
+  
+  //   tableList.value.forEach((item:any)=>{
+  //     item.isOpen=true;
+  //   })
+  // })
+})
+console.log('tableList.value',tableList.value)
 const varClick=(item_var:any)=>{
   currentSelectVar.value =item_var
 }

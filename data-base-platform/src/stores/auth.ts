@@ -32,7 +32,7 @@ export const useAuthStore = defineStore({
     },
     // 设置菜单列表
     async getAuthRouteList(roleId: number) {
-      const { data } = await getMenuTreeApi({ roleId });
+      const { data } = await<any> getMenuTreeApi({ roleId });
       this.authRouteList = menuFormat(data);
       
       

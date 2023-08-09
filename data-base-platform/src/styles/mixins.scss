@@ -3,7 +3,7 @@
 */
 
 /* 文本不换行 */
-@mixin text-no-wrap() {
+@mixin text-no-wrap{
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
