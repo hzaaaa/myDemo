@@ -14,7 +14,7 @@ interface SvgProps {
 }
 
 const props = withDefaults(defineProps<SvgProps>(), {
-  color: "#333333",
+  // color: "#333333",
   size: "1em",
 });
 

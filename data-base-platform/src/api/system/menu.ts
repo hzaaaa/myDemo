@@ -25,6 +25,7 @@ export const getMenuTreeApi = (params?: any) => {
           "name": item.name,
           "component": "/dataManagement/dataQuery/index",
           "meta": {
+            "icon": "icon-odbc",
             "title": item.name,
             "isKeepAlive": true,
             "isHide": false
@@ -36,6 +37,11 @@ export const getMenuTreeApi = (params?: any) => {
         arr.push(obj)
       }
       AuthRouteList.data[0].children = arr;
+      if(arr.length===0){
+        AuthRouteList.data[0].redirect ='';
+      }else{
+        AuthRouteList.data[0].redirect = arr[0].path;
+      }
       dataBaseStore.setDataBaseList(res.data)
       resolve(AuthRouteList)
     })

@@ -12,6 +12,7 @@ import { changePrimary, changeWarning } from "./utils/theme";
 import { DEFAULT_PRIMARY, DEFAULT_WARNING } from "./config";
 
 import "@/assets/iconfont/iconfont.js";
+import "@/assets/iconfont/iconfont1.js";
 
 const app = createApp(App);
 

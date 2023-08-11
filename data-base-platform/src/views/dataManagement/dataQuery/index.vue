@@ -5,10 +5,19 @@
 			<div class="table-list">
 				<div   v-for="item_table in tableList">
 
-					<div class="table-single" @dblclick="tableClick(item_table)" :class="currentSelectTable === item_table ? 'active' : ''">{{ `${item_table.name}` }}{{item_table.comment?`（${item_table.comment}）`:''  }}</div>
-					<div class="table-single pl25" @dblclick="varClick(item_var)"
+					<div class="table-single flex-align-center" @dblclick="tableClick(item_table)" :class="currentSelectTable === item_table ? 'active' : ''">
+						<el-icon class="mr4">
+							<SvgIcon name="icon-biaoge" size="14px"></SvgIcon>
+						</el-icon>
+						{{ `${item_table.name}` }}{{item_table.comment?`（${item_table.comment}）`:''  }}</div>
+					<div class="table-single pl25 flex-align-center" @dblclick="varClick(item_var)"
 						:class="currentSelectVar === item_var ? 'active' : ''" v-show="currentSelectTable === item_table"
-						v-for="item_var in currentSelectTable.column">{{ item_var.name }}{{item_var.comment?`（${item_var.comment}）`:''  }}</div>
+						v-for="item_var in currentSelectTable.column">
+						<el-icon class="mr4">
+							<SvgIcon name="icon-liebiao" size="14px"></SvgIcon>
+						</el-icon>
+						{{ item_var.name }}{{item_var.comment?`（${item_var.comment}）`:''  }}
+					</div>
 				</div>
 			</div>
 			<div class="sql-block">
@@ -20,9 +29,7 @@
 						执行
 					</el-button>
 				</div>
-				<div class="err_result" style="color:red" >
-					{{ sqlErr }}
-				</div>
+				
 				<div class="result-wrap">
 					<div class="result-head">
 						<div class="" style="flex: 1;">
@@ -34,13 +41,16 @@
 							导出
 						</el-button>
 					</div>
-					<div class="result-list"  :class="result_data.length===0?'result-empty':''">
+					<div class="result-list" v-show="!sqlErr"  :class="result_data.length===0?'result-empty':''">
 						<el-auto-resizer>
 							<template #default="{ height, width }">
 								<el-table-v2 :columns="columns" :data="result_data" :width="width" :height="height" fixed />
 							</template>
 						</el-auto-resizer>
 
+					</div>
+					<div class="err_result pl15" v-show="sqlErr" style="color:red" >
+						{{ sqlErr }}
 					</div>
 				</div>
 			</div>
@@ -256,10 +266,7 @@ const queryClick = () => {
 			})
 		}
 
-		data.forEach((item: any, index: number) => {
-			item.id = index;
-			item.parentId = null;
-		})
+		
 		result_data.value = data || [];
 		sqlErr.value=''
 		queryHistory();
